@@ -1,0 +1,406 @@
+<!-- <!DOCTYPE html>
+<html>
+    <head>
+        <title>Danh sách trạm</title>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="index.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="./style.css" />
+      </head>
+  <body>
+    <div class="container">
+      <div class="left-pane">
+        <h1>Danh sách</h1>
+        <ul id="list"></ul>
+      </div>
+
+      <div class="right-pane">
+        <div id="map"></div>
+      </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $.getJSON("data1.json", function (data) {
+              const tenChiNhanhList = Object.entries(data).map(([tenChiNhanh, trams]) => ({
+                tenChiNhanh,
+                trams,
+              }));
+              console.log(tenChiNhanhList);
+              
+              
+          
+              const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 13,
+                center: { lat: 20.865139, lng: 106.68383 },
+                gestureHandling: "greedy",
+              });
+          
+              const icon = {
+                url: "https://capnuochaiphong.com.vn/DesktopModule/CapNuocHP/asset/img/diemdo.png",
+                scaledSize: new google.maps.Size(40, 40),
+                fillColor: "green",
+                fillOpacity: 1,
+                anchor: new google.maps.Point(15, 30),
+              };
+          
+              const markers = [];
+          
+              tenChiNhanhList.forEach(item => {
+                const listItem = $("<li></li>");
+                const link = $("<a href='#'></a>");
+                console.log(item.trams.dia_chi);
+                
+          
+                link.text(item.tenChiNhanh);
+                listItem.append(link);
+                $("#list").append(listItem);
+          
+                link.on("click", function () {
+                  clearMarkers(); // Clear existing markers before adding new ones
+          
+                  item.trams.forEach(tram => {
+                    const toaDo = tram.toa_do;
+                   // const id = tram.id;
+                    //const dia_chi = tram.id;
+                   // console.log(item.trams);
+                    displayOnMap(toaDo);
+                  });
+                });
+              });
+          
+              function displayOnMap(toaDo) {
+                const [lat, lng] = toaDo.split(", ");
+                const position = { lat: parseFloat(lat), lng: parseFloat(lng) };
+          
+                const marker = new google.maps.Marker({
+                  position: position,
+                  map: map,
+                  icon: icon,
+                });
+          
+                markers.push(marker);
+              }
+          
+              function clearMarkers() {
+                for (const marker of markers) {
+                  marker.setMap(null);
+                }
+                markers.length = 0;
+              }
+            });
+          });
+          
+
+          
+      
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ9VlxoyUUewnGnipTgP4wngWHXRxnjXk&callback=initMap&v=weekly"
+    defer></script>
+  </body>
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh sách trạm</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="index.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="left-pane">
+            <h1>Danh sách</h1>
+            <ul id="list"></ul>
+        </div>
+
+        <div class="right-pane">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <div id="marker-dialog" class="marker-dialog">
+      <h3 id="marker-title"></h3>
+      <p id="marker-description"></p>
+      <div id="details"></div>
+      <button id="close-dialog-btn">Close</button>
+  </div>
+  
+</div>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ9VlxoyUUewnGnipTgP4wngWHXRxnjXk&callback=initMap&v=weekly"
+    defer></script>
+    <script>
+      $(document).ready(function () {
+        // ...
+    
+        // Đăng ký sự kiện click cho nút "Close"
+        $("#close-dialog-btn").on("click", function () {
+            $("#marker-dialog").hide();
+        });
+    
+        // Kéo thả dialog
+        $("#marker-dialog").draggable();
+    
+        // ...
+    });
+    $(document).ready(function () {
+      // ...
+  
+      interact("#marker-dialog")
+          .draggable({
+              onmove: dragMoveListener,
+          })
+          .resizable({
+              edges: { bottom: true, right: true },
+          });
+  
+      function dragMoveListener(event) {
+          var target = event.target;
+          var x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+          var y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+  
+          target.style.transform = "translate(" + x + "px, " + y + "px)";
+  
+          target.setAttribute("data-x", x);
+          target.setAttribute("data-y", y);
+      }
+  
+      // ...
+  });
+  
+    
+        $(document).ready(function () {
+            $.getJSON("data1.json", function (data) {
+                const tenChiNhanhList = Object.entries(data).map(([tenChiNhanh, trams]) => ({
+                    tenChiNhanh,
+                    trams,
+                }));
+               // console.log(tenChiNhanhList);
+
+                const map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 13,
+                    center: { lat: 20.865139, lng: 106.68383 },
+                    gestureHandling: "greedy",
+                });
+                
+
+                const icon = {
+                    url: "https://capnuochaiphong.com.vn/DesktopModule/CapNuocHP/asset/img/diemdo.png",
+                    scaledSize: new google.maps.Size(40, 40),
+                    fillColor: "green",
+                    fillOpacity: 1,
+                    anchor: new google.maps.Point(15, 30),
+                };
+
+                const markers = [];
+
+                tenChiNhanhList.forEach(item => {
+                    const listItem = $("<li></li>");
+                    const link = $("<a href='#'></a>");
+                    
+
+                    link.text(item.tenChiNhanh);
+                   // console.log(item.tenChiNhanh);
+                    switch (item.tenChiNhanh) {
+                      case "1":
+                          link.text("Trung Tâm");
+                          break;
+                      case "2":
+                          link.text("CNHP3");
+                          break;
+                          case "3":
+                          link.text("CNHP4");
+                          break;
+                          case "4":
+                          link.text("CNHP5");
+                          break;
+                          case "5":
+                          link.text("CNHP6");
+                          break;
+                          case "6":
+                          link.text("CNHP7");
+                          break;
+                          case "8":
+                          link.text("Vĩnh Bảo");
+                          break;
+                          case "9":
+                          link.text("Cát Bà");
+                          break;    
+                          case "10":
+                          link.text("CNTT");
+                          break;
+                          case "11":
+                          link.text("CNHP8");
+                          break;
+                          case "12":
+                          link.text("Thủy Nguyên");
+                          break;
+                          case "14":
+                          link.text("Áp lực");
+                          break;
+                          case "15":
+                          link.text("Nước nguồn");
+                          break;
+                          case "16":
+                          link.text("Bạch Long Vĩ");
+                          break;
+                          case "17":
+                          link.text("Clo");
+                          break;
+
+                      default:
+                          link.text(item.tenChiNhanh);
+                  }
+                  //  console.log(item);
+                    listItem.append(link);
+                    $("#list").append(listItem);
+                    
+
+                    link.on("click", function () {
+                        clearMarkers(); // Clear existing markers before adding new ones
+
+                        item.trams.forEach(tram => {
+                          const toaDo = tram.toa_do;
+                          const trang_thai = tram.trang_thai;
+                          displayOnMap(toaDo, tram.ten, tram.dia_chi, trang_thai);
+                      });
+                      
+                    });
+                });
+                function displayOnMap(toaDo, ten, diaChi, trang_thai) {
+                  const [lat, lng] = toaDo.split(", ");
+                  const position = { lat: parseFloat(lat), lng: parseFloat(lng) };
+              
+                  const marker = new google.maps.Marker({
+                      position: position,
+                      map: map,
+                      icon: icon,
+                  });
+              
+                  let backgroundColor;
+                  switch (trang_thai) {
+                      case 0:
+                          backgroundColor = "red";
+                          break;
+                      case 1:
+                          backgroundColor = "yellow";
+                          break;
+                      case 2:
+                          backgroundColor = "green";
+                          break;
+                      default:
+                          backgroundColor = "white";
+                  }
+              
+                  const content = `<div style="background-color: ${backgroundColor}; color: white;">${ten} - Trạng thái: ${trang_thai}</div>`;
+              
+                  const infoWindow = new google.maps.InfoWindow({
+                      content: content,
+                  });
+              
+                  infoWindow.open(map, marker);
+              
+                  marker.addListener("click", function () {
+                      showMarkerDialog(ten, diaChi, marker);
+                  });
+              
+                  markers.push(marker);
+              }
+              
+              
+              
+
+                function clearMarkers() {
+                    for (const marker of markers) {
+                        marker.setMap(null);
+                    }
+                    markers.length =0;
+                }
+
+                
+              
+              
+                function showMarkerDialog(ten, diaChi, marker) {
+    const markerDialog = document.getElementById("marker-dialog");
+    const markerTitle = document.getElementById("marker-title");
+    const markerDescription = document.getElementById("marker-description");
+    const detailsElement = document.getElementById("details");
+    
+
+    // Gán thông tin vào dialog
+    markerTitle.innerText = ten;
+    markerDescription.innerText = `Địa chỉ: ${diaChi}`;
+
+    // Hiển thị dialog
+    markerDialog.style.display = "block";
+    
+
+    // Gọi API để lấy dữ liệu chi tiết và hiển thị
+    fetch("data2.json")
+        .then(response => response.json())
+        .then(data => {
+            const tram = data.data.find(item => item.ten_tram === ten);
+            if (tram) {
+                const details = tram.details;
+                detailsElement.innerHTML = ""; // Xóa nội dung cũ (nếu có)
+
+                details.forEach(detail => {
+                    const detailItem = document.createElement("div");
+                    detailItem.innerHTML = `${detail.ten_thongso}: ${detail.Gia_Tri} ${detail.donvi}`;
+                    detailsElement.appendChild(detailItem);
+                });
+            }
+        })
+        .catch(error => {
+            console.log("Error fetching data from API:", error);
+        });
+}
+
+              
+              
+              
+              $(document).ready(function () {
+                  // ...
+              
+                  const markers = [];
+              
+                  tenChiNhanhList.forEach(item => {
+                      // ...
+              
+                      link.on("click", function () {
+                          clearMarkers(); // Clear existing markers before adding new ones
+              
+                          item.trams.forEach(tram => {
+                              const toaDo = tram.toa_do;
+                              displayOnMap(toaDo, tram.ten, tram.dia_chi);
+                          });
+                      });
+                  });
+              
+                  function displayOnMap(toaDo, ten, diaChi) {
+                      // ...
+              
+                      marker.addListener("click", function () {
+                        
+                        
+                          showMarkerDialog(ten, diaChi, marker);
+                          
+                      });
+              
+                      markers.push(marker);
+                  }
+              
+                  // ...
+              });
+              
+            });
+        });
+    </script>
+</body>
+</html>
