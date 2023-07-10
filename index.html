@@ -279,6 +279,7 @@
               
                   const marker = new google.maps.Marker({
                       position: position,
+                  
                       map: map,
                       icon: icon,
                   });
@@ -298,7 +299,7 @@
                           backgroundColor = "white";
                   }
               
-                  const content = `<div style="background-color: ${backgroundColor}; color: pink; font-size: 17px;">${ten}</div>`;
+                  const content = `<div style="background-color: ${backgroundColor}; color: white;">${ten} </div>`;
 
               
                   const infoWindow = new google.maps.InfoWindow({
